@@ -1,0 +1,122 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css')}}" />
+    <script src="{{ url_for('static', filename='scripts/webcam.js') }}"></script>
+</head>
+<body>
+    <div id="container">
+        <!-- <div id=menu>
+                <button>Video Snapshot</button>
+                <button>Image</button>
+                <button>URL</button>
+        </div> -->
+        <div id="my_camera" class="wrapper_container"></div>
+        <canvas id="canvas" class="wrapper_container"></canvas>
+        <form id="select_image" enctype="multipart/form-data" action="{{ url_for('classifyImage')}}" method="POST">
+            <input type="text" id="url_input" placeholder="URL:">
+            <!-- <div class="upload-btn-wrapper"> -->
+                    <button type="button" onclick="javascript:void(uploadFileFromURL())">Upload from URL</button>
+                    <input type="hidden" name="" id="" accept="image/*"/>
+                <!-- </div> -->
+            <div class="upload-btn-wrapper">
+                <button class ="btn">Take snapshot</button>
+                <input type="button" value="" onclick="javascript:void(take_snapshot())">
+            </div>
+            <div class="upload-btn-wrapper">
+                <button class ="btn">Upload a file</button>
+                <input type="file" name="image" id="" accept="image/*" onchange="javascript:void(uploadFile(this))"/>
+            </div>
+            <input id="dataUrlInput" type="hidden" name="dataUrl" value="">
+            <input type="submit" value="Classify it!">
+        </form>
+        <!-- <a class="link_snapshot" href="javascript:void(take_snapshot())">Take Snapshot</a> -->
+    </div>
+
+	<script>
+		Webcam.attach( '#my_camera' );
+		
+		function take_snapshot() {
+			Webcam.snap( function(data_uri) {
+                let canvas = document.getElementById("canvas");
+                let ctx = canvas.getContext("2d");
+                let img = new Image();
+                img.onload = function() {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    let data = canvas.toDataURL();
+                    console.log(data);
+                    addDataUrlInInput(data);
+                }
+                img.src = data_uri;
+			} );
+        }
+        
+        function uploadFile(input) {
+            if (input.files && input.files[0]) {
+                let canvas = document.getElementById("canvas");
+                let ctx = canvas.getContext("2d");
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = new Image();
+                    img.onload = function() {
+                        canvas.width = 640;
+                        canvas.height = 480;
+
+                        let imgWidth = img.width;
+                        let imgHeight = img.height;
+
+                        let sizer=scalePreserveAspectRatio(imgWidth,imgHeight,canvas.width,canvas.height);
+
+                        ctx.drawImage(img, 0, 0, 
+                                    imgWidth, imgHeight, 0 , 0 , 
+                                    imgWidth * sizer, imgHeight * sizer);
+                        
+                        addDataUrlInInput(canvas.toDataURL());
+                    }
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function uploadFileFromURL() {
+            let url = document.getElementById("url_input").value;
+            console.log(`URL: ${url}`);
+            if (url) {
+                // debugger;
+                console.log(`Url: ${url}`);
+                let canvas = document.getElementById("canvas");
+                let ctx = canvas.getContext("2d");
+
+                let img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = function() {
+                    canvas.width = 640;
+                    canvas.height = 480;
+
+                    let imgWidth = img.width;
+                    let imgHeight = img.height;
+
+                    let sizer=scalePreserveAspectRatio(imgWidth,imgHeight,canvas.width,canvas.height);
+
+                    ctx.drawImage(img, 0, 0, 
+                                imgWidth, imgHeight, 0 , 0 , 
+                                imgWidth * sizer, imgHeight * sizer);
+                        
+                    addDataUrlInInput(canvas.toDataURL());
+                }
+                img.src = url;
+            }
+
+            return false;
+        }
+
+        function scalePreserveAspectRatio(imgW,imgH,maxW,maxH){
+            return(Math.min((maxW/imgW),(maxH/imgH)));
+        }
+
+        function addDataUrlInInput(dataUrl) {
+            document.getElementById("dataUrlInput").value = dataUrl;
+        }
+    </script>
+</body>
