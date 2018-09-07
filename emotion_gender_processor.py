@@ -122,6 +122,5 @@ def process_image(image):
     recognition_datetime = str(datetime.now()).replace(' ', '_')
     filepath = os.path.join(SAVE_DIR, 'predicted_image_' + recognition_datetime + '.png')
     cv2.imwrite(filepath, bgr_image)
-    json_info['filepath'] = filepath
 
-    return detected_peoples
+    return detected_peoples, filepath

@@ -38,12 +38,12 @@ def classifyImage():
     content = dataUrl.split(';')[1]
     img_encoded = content.split(',')[1]
     body = base64.decodebytes(img_encoded.encode("utf-8"))    
-    prediction_result = eg_processor.process_image(body)
+    prediction_result, filepath_img = eg_processor.process_image(body)
 
     # print(json.dumps(json_info, ensure_ascii=False, default=str))
     
     print(prediction_result)
-    return render_template(CLASSIFY_IMAGE_TEMPLATE, json_result=prediction_result)
+    return render_template(CLASSIFY_IMAGE_TEMPLATE, json_result=prediction_result, filepath=filepath_img)
 
 def isValidFile(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

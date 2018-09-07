@@ -10,31 +10,25 @@
                 <button>Image</button>
                 <button>URL</button>
         </div> -->
-        <div id="result_image" class="wrapper_container"><img src="{{ json_result.filepath }}"></div>
+        <div id="result_image" class="wrapper_container"><img src="{{ filepath }}"></div>
         <div id="result_JSON" class="wrapper_container">
             <pre>
                 <code>
-                    {% for people in json_result %}
-                        {% for main_key, main_value in people.items() %}
-                            {% if main_key in ['gender', 'emotion'] %}
-                                {% for key, value in main_value.items() %}
-                                    <span>"{{ key }}"</span>: <span>{{ value }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span>{{ main_key }}</span>: <span>{{ main_value }}</span>
-                            {% endif %}
+                    <div class="people_characters">
+                        {% for people in json_result %}
+                            {% for main_key, main_value in people.items() %}
+                                <span>"{{ main_key }}"</span>
+                                {% if main_key in ['gender', 'emotion'] %}
+                                    {% for key, value in main_value.items() %}
+                                        <span>"{{ key }}"</span>: <span>{{ value }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
+                    </div>
                 </code>
             </pre>
         </canvas>
         <!-- <a class="link_snapshot" href="javascript:void(take_snapshot())">Take Snapshot</a> -->
     </div>
-
-    <script>
-        let json = {{ json_result }};
-        let canvas = document.getElementById("result_JSON");
-        let ctx = canvas.getContext("2d");
-        ctx.fillText(json, 10, 10);
-    </script>
 </body>

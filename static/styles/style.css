@@ -17,9 +17,15 @@ div#container {
 div.wrapper_container {
     width: 640px;
     height: 480px;
+    padding-left: 20px;
+    padding-right: 20px;
     float: left;
     margin-left: auto;
     margin-right: auto;
+}
+
+#my_camera {
+    padding: 0;
 }
 
 #select_image {
@@ -29,7 +35,12 @@ div.wrapper_container {
 }
 
 #result_JSON {
-    overflow: scroll;
+    overflow: auto;
+    border: 1px solid grey;
+}
+
+#result_JSON pre {
+    white-space: pre-wrap;
 }
 
 .upload-btn-wrapper {
