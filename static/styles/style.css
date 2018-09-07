@@ -28,6 +28,10 @@ div.wrapper_container {
     width: 100%;
 }
 
+#result_JSON {
+    overflow: scroll;
+}
+
 .upload-btn-wrapper {
     position: relative;
     overflow: hidden;

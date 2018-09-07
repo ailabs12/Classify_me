@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import copy
 from datetime import datetime
 
 import cv2
@@ -21,7 +22,8 @@ SAVE_DIR = 'static/result'
 
 def process_image(image):
     backend.clear_session()
-    jsonInfo = {}
+    detected_peoples = []
+    json_info = {}
     try:
         # parameters for loading data and images
         detection_model_path = './trained_models/detection_models/haarcascade_frontalface_default.xml'
@@ -31,15 +33,13 @@ def process_image(image):
         gender_labels = get_labels('imdb')
         font = cv2.FONT_HERSHEY_SIMPLEX
 
-        # jsonInfo["gender"] = dict.fromkeys(gender_labels.values())
-        # jsonInfo["emotion"] = dict.fromkeys(emotion_labels.values())
         gender_keys = list(gender_labels.values())
         emotion_keys = list(emotion_labels.values())
 
         print(gender_keys)
         print(emotion_keys)
 
-        # print(jsonInfo)
+        # print(json_info)
 
         # hyper-parameters for bounding boxes shape
         gender_offsets = (30, 60)
@@ -90,8 +90,16 @@ def process_image(image):
             emotion_label_arg = np.argmax(emotion_prediction)
             emotion_text = emotion_labels[emotion_label_arg]
 
-            jsonInfo['gender'] = dict(zip(gender_keys, gender_prediction.flat))
-            jsonInfo['emotion'] = dict(zip(emotion_keys, emotion_prediction.flat))
+            json_info['gender'] = dict(zip(gender_keys, gender_prediction.astype(np.float16).flat))
+            json_info['emotion'] = dict(zip(emotion_keys, emotion_prediction.astype(np.float16).flat))
+
+            for key, value in json_info["gender"].items():
+                json_info["gender"][key] = str(value)
+
+            for key, value in json_info["emotion"].items():
+                json_info["emotion"][key] = str(value)
+
+            detected_peoples.append(copy.deepcopy(json_info))
             print(face_coordinates)
 
             if gender_text == gender_labels[0]:
@@ -114,4 +122,6 @@ def process_image(image):
     recognition_datetime = str(datetime.now()).replace(' ', '_')
     filepath = os.path.join(SAVE_DIR, 'predicted_image_' + recognition_datetime + '.png')
     cv2.imwrite(filepath, bgr_image)
-    return filepath
+    json_info['filepath'] = filepath
+
+    return detected_peoples

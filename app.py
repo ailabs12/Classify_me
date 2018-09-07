@@ -1,8 +1,10 @@
 import os
 import base64
+import json
 from PIL import Image
 import numpy as np
 from flask import Flask, render_template, url_for,redirect, request, make_response
+from markupsafe import Markup
 
 import emotion_gender_processor as eg_processor
 
@@ -36,10 +38,12 @@ def classifyImage():
     content = dataUrl.split(';')[1]
     img_encoded = content.split(',')[1]
     body = base64.decodebytes(img_encoded.encode("utf-8"))    
-    # jsonInfo = 
-    full_filepath = eg_processor.process_image(body)
+    prediction_result = eg_processor.process_image(body)
 
-    return render_template(CLASSIFY_IMAGE_TEMPLATE, result_img=full_filepath)
+    # print(json.dumps(json_info, ensure_ascii=False, default=str))
+    
+    print(prediction_result)
+    return render_template(CLASSIFY_IMAGE_TEMPLATE, json_result=prediction_result)
 
 def isValidFile(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
