@@ -1,2 +1,2 @@
 # Classify_Me
-Latest version 0.1
+Latest version 0.2
