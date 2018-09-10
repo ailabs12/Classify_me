@@ -98,6 +98,7 @@ div.wrapper_container {
 
 .face_rectangle:hover .face_info {
     display: block;
+    z-index: 9999;
 }
 
 .face_rectangle .face_info span {
