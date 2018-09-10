@@ -43,6 +43,11 @@ div.wrapper_container {
     white-space: pre-wrap;
 }
 
+#result_JSON pre code {
+    float: left;
+    text-align: left;
+}
+
 .upload-btn-wrapper {
     position: relative;
     overflow: hidden;
@@ -71,4 +76,39 @@ div.wrapper_container {
     opacity: 0;
     width: 100%;
     height: 100%;
-  }
+}
+
+#predicted_image .prediction_bound_box{
+    position: relative;
+}
+
+#predicted_image .face_rectangle {
+    position: absolute;
+    border: solid 3px lightskyblue;
+}
+
+.face_rectangle .face_info {
+    border: 1px solid rgb(82, 82, 82);
+    background-color: whitesmoke;
+    /* text-align: left; */
+    position: absolute;
+    display: none;
+    font-family: 'Open Sans';
+}
+
+.face_rectangle:hover .face_info {
+    display: block;
+}
+
+.face_rectangle .face_info span {
+    color: black;
+}
+
+.face_rectangle .face_info .key_feature {
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.face_rectangle .face_info .value_feature {
+    text-align: left;
+}

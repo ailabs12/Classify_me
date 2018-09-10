@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css')}}" />
-    <!-- <script src="{{ url_for('static', filename='scripts/webcam.js') }}"></script> -->
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <meta name="face_bound" 
+          content="{%- for i in range(json_result|length) -%}
+                        {{- json_result[i].face_bound -}}
+                        {%- if json_result|length > 1 and json_result|length - 1 != i -%};{%- endif -%}
+                   {%- endfor -%}"/>
+    <!-- <meta name="result_features"
+          content="{%- for i in range(json_result|length) -%}
+                        {{- json_result[i].result -}}
+                        {%- if json_result|length > 1 and json_result|length - 1 != i -%};{%- endif -%}
+                   {%- endfor -%}"/> -->
 </head>
 <body>
     <div id="container">
@@ -10,25 +20,55 @@
                 <button>Image</button>
                 <button>URL</button>
         </div> -->
-        <div id="result_image" class="wrapper_container"><img src="{{ filepath }}"></div>
+        <div id="predicted_image" class="wrapper_container">
+            <div class="prediction_bound_box">
+                <img src="{{ filepath }}">
+                {%- for i in range(json_result|length) -%}
+                    <div class="face_rectangle">
+                        <table class="face_info">
+                            {%- for key, value in json_result[i].result.items() -%}
+                            <tr>
+                                <td class="key_feature"><span>{{- key -}}: </span></td><td class="value_feature"><span>{{- value -}}</span></td>
+                            </tr>
+                            {%- endfor -%}
+                        </table>
+                    </div>
+                {%- endfor -%}
+            </div>
+        </div>
         <div id="result_JSON" class="wrapper_container">
             <pre>
                 <code>
-                    <div class="people_characters">
-                        {% for people in json_result %}
-                            {% for main_key, main_value in people.items() %}
-                                <span>"{{ main_key }}"</span>
-                                {% if main_key in ['gender', 'emotion'] %}
-                                    {% for key, value in main_value.items() %}
-                                        <span>"{{ key }}"</span>: <span>{{ value }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
+                    {% for people in json_result %}
+                        {% for main_key, main_value in people.items() %}
+                            <span>"{{ main_key }}"</span>
+                            {% if main_key in ['gender', 'emotion'] %}
+                                {% for key, value in main_value.items() %}
+                                <span>"{{ key }}"</span>: <span>{{ value }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span>{{ main_value }}</span>
+                            {% endif %}
                         {% endfor %}
-                    </div>
+                    {% endfor %}
                 </code>
             </pre>
         </canvas>
         <!-- <a class="link_snapshot" href="javascript:void(take_snapshot())">Take Snapshot</a> -->
     </div>
+
+    <script>
+        let face_box = document.querySelector("meta[name='face_bound'").getAttribute("content");
+        let rectangle_boxes = document.getElementsByClassName("face_rectangle");
+        let face_info = document.getElementsByClassName("face_info");
+        let faces = face_box.split(";");
+        let face_coords = faces.map(el => JSON.parse(el));
+        for (let i = 0; i < rectangle_boxes.length; i++) {
+            rectangle_boxes[i].style.left = face_coords[i][0] + "px";
+            rectangle_boxes[i].style.top = face_coords[i][1] + "px";
+            rectangle_boxes[i].style.width = face_coords[i][2] + "px";
+            rectangle_boxes[i].style.height = face_coords[i][3] + "px";
+            face_info[i].style.left = (face_coords[i][2] + 5) + "px";
+        }
+    </script>
 </body>

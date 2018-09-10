@@ -90,8 +90,12 @@ def process_image(image):
             emotion_label_arg = np.argmax(emotion_prediction)
             emotion_text = emotion_labels[emotion_label_arg]
 
+            # print(gender_label_arg)
+            # print(emotion_label_arg)
             json_info['gender'] = dict(zip(gender_keys, gender_prediction.astype(np.float16).flat))
             json_info['emotion'] = dict(zip(emotion_keys, emotion_prediction.astype(np.float16).flat))
+            json_info['face_bound'] = str(list(face_coordinates))
+            json_info['result'] = {'gender': gender_text, 'emotion': emotion_text}
 
             for key, value in json_info["gender"].items():
                 json_info["gender"][key] = str(value)
@@ -100,16 +104,16 @@ def process_image(image):
                 json_info["emotion"][key] = str(value)
 
             detected_peoples.append(copy.deepcopy(json_info))
-            print(face_coordinates)
+            # print(face_coordinates)
 
-            if gender_text == gender_labels[0]:
-                color = (0, 0, 255)
-            else:
-                color = (255, 0, 0)
+            # if gender_text == gender_labels[0]:
+            #     color = (0, 0, 255)
+            # else:
+            #     color = (255, 0, 0)
 
-            draw_bounding_box(face_coordinates, rgb_image, color)
-            draw_text(face_coordinates, rgb_image, gender_text, color, 0, -20, 1, 2)
-            draw_text(face_coordinates, rgb_image, emotion_text, color, 0, -50, 1, 2)
+            # draw_bounding_box(face_coordinates, rgb_image, color)
+            # draw_text(face_coordinates, rgb_image, gender_text, color, 0, -20, 1, 2)
+            # draw_text(face_coordinates, rgb_image, emotion_text, color, 0, -50, 1, 2)
     except Exception as err:
         logging.error('Error in emotion gender processor: "{0}"'.format(err))
 
